@@ -271,7 +271,21 @@ wss.on("connection", (ws) => {
         try {
             const data = JSON.parse(message.toString());
 
-            if (!data || !data.action) return;
+            if (!data) return;
+
+            // Application-level heartbeat.
+            // Browser clients send PING messages periodically.
+            if (data.type === "PING") {
+                ws.send(
+                    JSON.stringify({
+                        type: "PONG",
+                        timestamp: Date.now()
+                    })
+                );
+                return;
+            }
+
+            if (!data.action) return;
 
             handleAction(data.action, data.payload || {});
         } catch (error) {
@@ -307,6 +321,31 @@ app.get("/api/state", (req, res) => {
 });
 
 app.use(express.static(path.join(__dirname, "public")));
+
+function shutdown(signal) {
+    console.log(`${signal} received. Shutting down gracefully...`);
+
+    wss.clients.forEach((client) => {
+        try {
+            client.close(1001, "Server shutting down");
+        } catch (error) {
+            console.error("Failed to close WebSocket client:", error);
+        }
+    });
+
+    server.close(() => {
+        console.log("HTTP server closed.");
+        process.exit(0);
+    });
+
+    setTimeout(() => {
+        process.exit(1);
+    }, 5000).unref();
+}
+
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
+
 
 server.listen(PORT, "0.0.0.0", () => {
     console.log("========================================");
