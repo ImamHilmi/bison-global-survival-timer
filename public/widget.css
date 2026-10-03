@@ -1,0 +1,395 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: transparent;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.widget {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+.timer-card {
+    position: relative;
+    width: min(720px, 96vw);
+    min-height: 158px;
+    padding: 20px 28px 18px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 45, 55, 0.48);
+    border-radius: 14px;
+    background:
+        linear-gradient(90deg, rgba(6, 7, 11, 0.96), rgba(15, 7, 12, 0.88), rgba(6, 7, 11, 0.96)),
+        url("https://raw.githubusercontent.com/ImamHilmi/bison-stream-assets/main/chat/alert-popup-japan-night.png") center / cover no-repeat;
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+        0 18px 42px rgba(0, 0, 0, 0.50),
+        0 0 22px rgba(255, 25, 35, 0.16),
+        0 0 65px rgba(160, 0, 20, 0.10);
+}
+
+.timer-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 50% 48%, rgba(255, 30, 40, 0.16), transparent 42%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 30%, rgba(0, 0, 0, 0.34));
+}
+
+.timer-card::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 8%;
+    width: 84%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255, 35, 45, 0.95), transparent);
+    box-shadow: 0 0 10px rgba(255, 35, 45, 0.7);
+}
+
+.scanline {
+    position: absolute;
+    top: 0;
+    left: -30%;
+    width: 30%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 50, 60, 0.08), transparent);
+    transform: skewX(-18deg);
+    pointer-events: none;
+    animation: scan 6s linear infinite;
+}
+
+.ambient-glow {
+    position: absolute;
+    width: 55%;
+    height: 100%;
+    left: 22.5%;
+    top: 0;
+    background: radial-gradient(circle, rgba(255, 30, 40, 0.12), transparent 68%);
+    filter: blur(24px);
+    pointer-events: none;
+    animation: ambient 3.5s ease-in-out infinite;
+}
+
+.header {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.game-badge {
+    width: 42px;
+    height: 42px;
+    border: 1px solid rgba(255, 55, 65, 0.55);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    background: rgba(7, 7, 10, 0.74);
+    box-shadow:
+        inset 0 0 12px rgba(255, 20, 30, 0.09),
+        0 0 12px rgba(255, 25, 35, 0.14);
+}
+
+.titles {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.title {
+    max-width: 360px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: 2.2px;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.10);
+}
+
+.subtitle {
+    margin-top: 4px;
+    color: rgba(255, 255, 255, 0.46);
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+}
+
+.state-chip {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 9px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.34);
+    color: rgba(255, 255, 255, 0.48);
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+}
+
+.state-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #e3a63a;
+    box-shadow: 0 0 8px rgba(227, 166, 58, 0.35);
+}
+
+.divider {
+    position: relative;
+    z-index: 2;
+    margin: 12px 0 8px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 40, 50, 0.42), transparent);
+}
+
+.timer {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: #ffffff;
+    font-family: "Courier New", monospace;
+    font-size: clamp(40px, 7vw, 64px);
+    font-weight: 900;
+    letter-spacing: 4px;
+    line-height: 1;
+    text-shadow:
+        0 0 10px rgba(255, 255, 255, 0.14),
+        0 0 26px rgba(255, 25, 35, 0.22);
+    transform-origin: center;
+}
+
+.timer-meta {
+    position: relative;
+    z-index: 2;
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.38);
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 2.6px;
+}
+
+.meta-line {
+    width: 70px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 45, 55, 0.45));
+}
+
+.meta-line:last-child {
+    background: linear-gradient(90deg, rgba(255, 45, 55, 0.45), transparent);
+}
+
+.timer-card.playing {
+    animation: aliveAura 2.6s ease-in-out infinite;
+}
+
+.timer-card.paused {
+    filter: saturate(0.88);
+}
+
+.timer-card.world-lost {
+    animation:
+        worldLostShake 0.72s ease-out 1,
+        deadAura 2.1s ease-in-out infinite;
+}
+
+.timer-card.event-start,
+.timer-card.event-resume {
+    animation: startImpact 0.72s cubic-bezier(0.2, 1.35, 0.35, 1) 1;
+}
+
+.timer-card.event-pause {
+    animation: pauseImpact 0.42s ease-out 1;
+}
+
+.timer-card.event-reset {
+    animation: resetFlash 0.60s ease-out 1;
+}
+
+.timer-card.event-start .timer,
+.timer-card.event-resume .timer,
+.timer-card.event-pause .timer,
+.timer-card.event-reset .timer {
+    animation: timerPulse 0.60s cubic-bezier(0.2, 1.35, 0.35, 1) 1;
+}
+
+.timer-card.world-lost .timer {
+    color: #ff5a62;
+    text-shadow:
+        0 0 10px rgba(255, 55, 65, 0.40),
+        0 0 32px rgba(255, 25, 35, 0.44);
+}
+
+.timer-card.playing .state-dot {
+    background: #ff3d4b;
+    box-shadow:
+        0 0 7px rgba(255, 45, 55, 0.95),
+        0 0 16px rgba(255, 35, 45, 0.38);
+    animation: statePulse 1.2s ease-in-out infinite;
+}
+
+.timer-card.world-lost .state-dot {
+    background: #ff404c;
+    box-shadow: 0 0 10px rgba(255, 55, 65, 0.85);
+}
+
+@keyframes scan {
+    0% { transform: translateX(0) skewX(-18deg); opacity: 0; }
+    10% { opacity: 1; }
+    70% { opacity: 0.5; }
+    100% { transform: translateX(480%) skewX(-18deg); opacity: 0; }
+}
+
+@keyframes ambient {
+    0%, 100% { opacity: 0.55; transform: scale(0.96); }
+    50% { opacity: 1; transform: scale(1.06); }
+}
+
+@keyframes aliveAura {
+    0%, 100% {
+        box-shadow:
+            inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+            0 18px 42px rgba(0, 0, 0, 0.50),
+            0 0 20px rgba(255, 25, 35, 0.14),
+            0 0 52px rgba(160, 0, 20, 0.08);
+    }
+    50% {
+        box-shadow:
+            inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+            0 18px 42px rgba(0, 0, 0, 0.50),
+            0 0 28px rgba(255, 25, 35, 0.28),
+            0 0 78px rgba(160, 0, 20, 0.14);
+    }
+}
+
+@keyframes deadAura {
+    0%, 100% {
+        box-shadow:
+            inset 0 0 0 1px rgba(255, 55, 65, 0.14),
+            0 18px 42px rgba(0, 0, 0, 0.52),
+            0 0 22px rgba(255, 25, 35, 0.24),
+            0 0 60px rgba(180, 0, 20, 0.16);
+    }
+    50% {
+        box-shadow:
+            inset 0 0 0 1px rgba(255, 80, 90, 0.26),
+            0 18px 42px rgba(0, 0, 0, 0.52),
+            0 0 34px rgba(255, 25, 35, 0.46),
+            0 0 92px rgba(180, 0, 20, 0.28);
+    }
+}
+
+@keyframes startImpact {
+    0% { transform: scale(1); filter: brightness(1); }
+    18% { transform: scale(1.035); filter: brightness(1.38); }
+    42% { transform: scale(0.992); filter: brightness(1.12); }
+    70% { transform: scale(1.008); }
+    100% { transform: scale(1); filter: brightness(1); }
+}
+
+@keyframes pauseImpact {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.99); filter: brightness(0.90); }
+    100% { transform: scale(1); }
+}
+
+@keyframes resetFlash {
+    0% { transform: scale(1); filter: brightness(1); }
+    22% { transform: scale(1.025); filter: brightness(1.30); }
+    100% { transform: scale(1); filter: brightness(1); }
+}
+
+@keyframes timerPulse {
+    0% { transform: scale(1); }
+    35% { transform: scale(1.035); }
+    70% { transform: scale(0.99); }
+    100% { transform: scale(1); }
+}
+
+@keyframes worldLostShake {
+    0% { transform: translateX(0) rotate(0); filter: brightness(1); }
+    15% { transform: translateX(-5px) rotate(-0.8deg); filter: brightness(1.38); }
+    30% { transform: translateX(6px) rotate(0.9deg); }
+    45% { transform: translateX(-4px) rotate(-0.6deg); }
+    60% { transform: translateX(3px) rotate(0.4deg); }
+    100% { transform: translateX(0) rotate(0); filter: brightness(1); }
+}
+
+@keyframes statePulse {
+    0%, 100% { transform: scale(0.88); opacity: 0.65; }
+    50% { transform: scale(1.18); opacity: 1; }
+}
+
+@media (max-width: 560px) {
+    .timer-card {
+        min-height: 132px;
+        padding: 15px 16px 14px;
+        border-radius: 12px;
+    }
+
+    .game-badge {
+        width: 34px;
+        height: 34px;
+        font-size: 15px;
+    }
+
+    .title {
+        max-width: 210px;
+        font-size: 12px;
+    }
+
+    .subtitle {
+        font-size: 7px;
+    }
+
+    .state-chip {
+        padding: 5px 7px;
+        font-size: 7px;
+    }
+
+    .timer {
+        font-size: clamp(28px, 10vw, 48px);
+        letter-spacing: 2px;
+    }
+
+    .meta-line {
+        width: 34px;
+    }
+}

@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BISON Survival Control</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        :root {
+            --bg: #090a0e;
+            --panel: #111319;
+            --panel-soft: rgba(255,255,255,0.035);
+            --line: rgba(255,255,255,0.08);
+            --text: #ffffff;
+            --muted: rgba(255,255,255,0.42);
+            --red: #ff3544;
+            --red-soft: rgba(255,53,68,0.20);
+            --green: #57de7d;
+            --amber: #e5a93d;
+        }
+
+        html,
+        body {
+            width: 100%;
+            min-height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+            background:
+                linear-gradient(rgba(7,8,12,0.90), rgba(7,8,12,0.97)),
+                url("https://raw.githubusercontent.com/ImamHilmi/bison-stream-assets/main/chat/alert-popup-japan-night.png") center / cover fixed no-repeat;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(circle at 50% 18%, rgba(255,40,50,0.13), transparent 38%),
+                linear-gradient(90deg, transparent 0%, rgba(255,30,40,0.035) 50%, transparent 100%);
+        }
+
+        .shell {
+            width: min(760px, 94vw);
+            margin: 38px auto;
+        }
+
+        .panel {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,45,55,0.30);
+            border-radius: 18px;
+            padding: 28px;
+            background: linear-gradient(145deg, rgba(17,19,25,0.96), rgba(7,8,12,0.93));
+            box-shadow:
+                0 30px 80px rgba(0,0,0,0.52),
+                0 0 28px rgba(255,25,35,0.11);
+            backdrop-filter: blur(12px);
+        }
+
+        .panel::before {
+            content: "";
+            position: absolute;
+            left: 8%;
+            right: 8%;
+            top: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--red), transparent);
+            box-shadow: 0 0 12px rgba(255,45,55,0.72);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-mark {
+            width: 46px;
+            height: 46px;
+            border: 1px solid rgba(255,50,60,0.44);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            background: rgba(8,9,12,0.82);
+            box-shadow: inset 0 0 16px rgba(255,30,40,0.08), 0 0 18px rgba(255,30,40,0.12);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: 2.4px;
+        }
+
+        .subtitle {
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 2.4px;
+        }
+
+        .connection {
+            margin-left: auto;
+            padding: 7px 10px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: rgba(0,0,0,0.28);
+            color: #ff686f;
+            font-size: 8px;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+        }
+
+        .connection.connected {
+            color: var(--green);
+        }
+
+        .section {
+            position: relative;
+            margin-top: 24px;
+            padding: 18px;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: rgba(255,255,255,0.022);
+        }
+
+        .section-title {
+            color: rgba(255,255,255,0.58);
+            font-size: 8px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: rgba(255,255,255,0.42);
+            font-size: 8px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 12px 12px;
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 10px;
+            outline: none;
+            background: rgba(0,0,0,0.28);
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        select:focus,
+        input:focus {
+            border-color: rgba(255,55,65,0.46);
+            box-shadow: 0 0 0 2px rgba(255,45,55,0.08);
+        }
+
+        .custom-game {
+            display: none;
+            margin-top: 12px;
+        }
+
+        .custom-game.visible {
+            display: block;
+        }
+
+        .game-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .current-game {
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px;
+            border: 1px solid rgba(255,45,55,0.14);
+            border-radius: 10px;
+            background: rgba(255,30,40,0.035);
+        }
+
+        .current-game strong {
+            color: #fff;
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+
+        .current-game span {
+            color: var(--muted);
+            font-size: 8px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .timer-display {
+            margin-top: 22px;
+            text-align: center;
+        }
+
+        #timer {
+            font-family: "Courier New", monospace;
+            font-size: clamp(44px, 8vw, 70px);
+            font-weight: 900;
+            letter-spacing: 4px;
+            line-height: 1;
+            text-shadow: 0 0 20px rgba(255,255,255,0.12), 0 0 38px rgba(255,30,40,0.16);
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+            color: rgba(255,255,255,0.50);
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--amber);
+        }
+
+        .status.playing .status-dot {
+            background: var(--red);
+            box-shadow: 0 0 9px rgba(255,55,65,0.85);
+            animation: pulse 1.2s ease-in-out infinite;
+        }
+
+        .status.dead {
+            color: #ff5b63;
+        }
+
+        .status.dead .status-dot {
+            background: #ff4450;
+            box-shadow: 0 0 10px rgba(255,50,60,0.85);
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 22px;
+        }
+
+        button {
+            position: relative;
+            overflow: hidden;
+            padding: 13px 11px;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.035);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: 1.4px;
+            cursor: pointer;
+            transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+        }
+
+        button::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -40%;
+            width: 30%;
+            height: 100%;
+            transform: skewX(-18deg);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+            transition: left 0.4s ease;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            border-color: rgba(255,50,60,0.30);
+            background: rgba(255,45,55,0.06);
+            box-shadow: 0 0 18px rgba(255,25,35,0.10);
+        }
+
+        button:hover:not(:disabled)::after {
+            left: 125%;
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(0) scale(0.985);
+        }
+
+        button:disabled {
+            opacity: 0.22;
+            cursor: not-allowed;
+        }
+
+        .primary {
+            border-color: rgba(255,45,55,0.34);
+            background: rgba(255,35,45,0.08);
+        }
+
+        .danger {
+            color: #ff7077;
+            border-color: rgba(255,65,75,0.22);
+        }
+
+        .wide {
+            grid-column: 1 / -1;
+        }
+
+        .divider-line {
+            margin: 22px 0 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,45,55,0.25), transparent);
+        }
+
+        .footer-note {
+            margin-top: 14px;
+            text-align: center;
+            color: rgba(255,255,255,0.25);
+            font-size: 7px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+        }
+
+        .panel.event {
+            animation: panelFlash 0.55s ease-out 1;
+        }
+
+        .panel.lost {
+            animation: panelLost 0.75s ease-out 1;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.52), 0 0 30px rgba(255,25,35,0.24), 0 0 80px rgba(170,0,20,0.16);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(0.85); opacity: 0.65; }
+            50% { transform: scale(1.2); opacity: 1; }
+        }
+
+        @keyframes panelFlash {
+            0% { transform: scale(1); filter: brightness(1); }
+            22% { transform: scale(1.015); filter: brightness(1.28); }
+            100% { transform: scale(1); filter: brightness(1); }
+        }
+
+        @keyframes panelLost {
+            0% { transform: rotate(0); }
+            18% { transform: rotate(-0.7deg) scale(1.02); }
+            38% { transform: rotate(0.7deg) scale(0.99); }
+            60% { transform: rotate(-0.35deg) scale(1.01); }
+            100% { transform: rotate(0) scale(1); }
+        }
+
+        @media (max-width: 650px) {
+            .shell { width: min(94vw, 520px); margin: 20px auto; }
+            .panel { padding: 20px; }
+            .game-grid { grid-template-columns: 1fr; }
+            .connection { display: none; }
+        }
+        /* ==========================================
+            BISON DARK SELECT / DROPDOWN
+            ========================================== */
+
+            select {
+
+                width: 100%;
+
+                padding:
+                    13px
+                    42px
+                    13px
+                    14px;
+
+                border-radius:
+                    10px;
+
+                border:
+                    1px solid
+                    rgba(
+                        255,
+                        45,
+                        55,
+                        0.65
+                    );
+
+                background:
+                    #11151c;
+
+                color:
+                    #ffffff;
+
+                font-family:
+                    Arial,
+                    Helvetica,
+                    sans-serif;
+
+                font-size:
+                    13px;
+
+                font-weight:
+                    700;
+
+                letter-spacing:
+                    0.2px;
+
+                outline:
+                    none;
+
+                color-scheme:
+                    dark;
+
+                cursor:
+                    pointer;
+
+                transition:
+                    border-color 0.2s ease,
+                    box-shadow 0.2s ease,
+                    background 0.2s ease;
+            }
+
+
+            /* SELECTED FIELD */
+
+            select:hover {
+
+                background:
+                    #151a22;
+
+                border-color:
+                    rgba(
+                        255,
+                        55,
+                        65,
+                        0.90
+                    );
+            }
+
+
+            select:focus {
+
+                background:
+                    #11151c;
+
+                border-color:
+                    #ff3542;
+
+                box-shadow:
+
+                    0 0 0 1px
+                    rgba(
+                        255,
+                        53,
+                        66,
+                        0.25
+                    ),
+
+                    0 0 16px
+                    rgba(
+                        255,
+                        35,
+                        45,
+                        0.18
+                    );
+            }
+
+
+            /* ==========================================
+            OPTIONS
+            ========================================== */
+
+            select option {
+
+                background:
+                    #151922;
+
+                color:
+                    #ffffff;
+
+                font-family:
+                    Arial,
+                    Helvetica,
+                    sans-serif;
+
+                font-size:
+                    13px;
+
+                font-weight:
+                    600;
+
+                padding:
+                    10px;
+            }
+
+
+            /* SELECTED OPTION */
+
+            select option:checked {
+
+                background:
+                    #701822;
+
+                color:
+                    #ffffff;
+
+                font-weight:
+                    700;
+            }
+
+
+            /* DISABLED OPTION */
+
+            select option:disabled {
+
+                background:
+                    #0d1015;
+
+                color:
+                    rgba(
+                        255,
+                        255,
+                        255,
+                        0.35
+                    );
+            }
+
+
+            /* ==========================================
+            GAME SELECT
+            ========================================== */
+
+            #gameSelect {
+
+                background:
+                    #11151c;
+
+                color:
+                    #ffffff;
+            }
+
+
+            /* ==========================================
+            MODE SELECT
+            ========================================== */
+
+            #modeSelect {
+
+                background:
+                    #11151c;
+
+                color:
+                    #ffffff;
+            }
+
+
+            /* ==========================================
+            CUSTOM GAME INPUT
+            ========================================== */
+
+            #customGameInput {
+
+                width:
+                    100%;
+
+                background:
+                    #11151c;
+
+                color:
+                    #ffffff;
+
+                border:
+                    1px solid
+                    rgba(
+                        255,
+                        45,
+                        55,
+                        0.45
+                    );
+            }
+
+
+            #customGameInput::placeholder {
+
+                color:
+                    rgba(
+                        255,
+                        255,
+                        255,
+                        0.35
+                    );
+            }
+
+
+            #customGameInput:focus {
+
+                outline:
+                    none;
+
+                border-color:
+                    #ff3542;
+
+                box-shadow:
+
+                    0 0 0 1px
+                    rgba(
+                        255,
+                        53,
+                        66,
+                        0.22
+                    ),
+
+                    0 0 14px
+                    rgba(
+                        255,
+                        35,
+                        45,
+                        0.15
+                    );
+            }
+    </style>
+</head>
+<body>
+
+<div class="shell">
+    <section id="panel" class="panel">
+        <header class="header">
+            <div class="brand-mark">B</div>
+            <div>
+                <h1>BISON SURVIVAL CONTROL</h1>
+                <div class="subtitle">GLOBAL TIMER • DEATH COUNTER • STREAM HUD</div>
+            </div>
+            <div id="connection" class="connection">DISCONNECTED</div>
+        </header>
+
+        <section class="section">
+            <div class="section-title">Game Navigation</div>
+
+            <div class="game-grid">
+                <div>
+                    <label for="gameSelect">Game</label>
+                    <select id="gameSelect">
+                        <option value="Palworld">Palworld</option>
+                        <option value="Minecraft">Minecraft</option>
+                        <option value="Subnautica 2">Subnautica 2</option>
+                        <option value="A Plague Tale: Innocence">A Plague Tale: Innocence</option>
+                        <option value="RLCraft">RLCraft</option>
+                        <option value="Valorant">Valorant</option>
+                        <option value="Counter-Strike 2">Counter-Strike 2</option>
+                        <option value="__custom__">Custom Game</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="modeSelect">Mode</label>
+                    <select id="modeSelect">
+                        <option value="HARDCORE SURVIVAL">Hardcore Survival</option>
+                        <option value="SURVIVAL">Survival</option>
+                        <option value="CHALLENGE">Challenge</option>
+                        <option value="CUSTOM">Custom Mode</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="customGame" class="custom-game">
+                <label for="customGameInput">Custom Game Name</label>
+                <input id="customGameInput" maxlength="48" placeholder="Example: Resident Evil Requiem">
+            </div>
+
+            <div class="game-actions">
+                <button id="applyGameButton" class="primary">APPLY GAME</button>
+                <button id="applyModeButton">APPLY MODE</button>
+            </div>
+
+            <div class="current-game">
+                <div>
+                    <strong id="currentGameName">PALWORLD</strong>
+                    <div id="currentModeName">HARDCORE SURVIVAL</div>
+                </div>
+                <span id="currentState">READY</span>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-title">World Timer</div>
+
+            <div class="timer-display">
+                <div id="timer">00:00:00</div>
+                <div id="status" class="status">
+                    <span class="status-dot"></span>
+                    <span id="statusText">READY</span>
+                </div>
+            </div>
+
+            <div class="buttons">
+                <button id="startButton" class="primary">START TIMER</button>
+                <button id="pauseButton">PAUSE</button>
+                <button id="resumeButton">RESUME</button>
+                <button id="worldLostButton" class="danger">WORLD LOST</button>
+                <button id="addDeathButton" class="danger">+1 DEATH</button>
+                <button id="removeDeathButton">-1 DEATH</button>
+                <button id="resetDeathsButton" class="wide">RESET DEATHS</button>
+                <button id="resetButton" class="wide">RESET WORLD</button>
+            </div>
+        </section>
+
+        <div class="divider-line"></div>
+        <div class="footer-note">CONTROL PANEL • OPEN THIS PAGE FROM ANY DEVICE THAT CAN REACH THE SERVER</div>
+    </section>
+</div>
+
+<script>
+    let socket = null;
+    let reconnectTimer = null;
+
+    let timerState = {
+        gameName: "Palworld",
+        modeName: "HARDCORE SURVIVAL",
+        elapsed: 0,
+        deaths: 0,
+        started: false,
+        running: false,
+        dead: false,
+        status: "NEW"
+    };
+
+    let localStartedAt = null;
+    let selectorsInitialized = false;
+
+    const $ = (id) => document.getElementById(id);
+
+    const connectionElement = $("connection");
+    const panel = $("panel");
+    const gameSelect = $("gameSelect");
+    const modeSelect = $("modeSelect");
+    const customGame = $("customGame");
+    const customGameInput = $("customGameInput");
+
+    function connect() {
+        if (socket && (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING)) {
+            return;
+        }
+
+        const protocol = location.protocol === "https:" ? "wss:" : "ws:";
+        socket = new WebSocket(`${protocol}//${location.host}`);
+
+        socket.addEventListener("open", () => setConnection(true));
+
+        socket.addEventListener("message", (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                if (data.type !== "state" || !data.state) return;
+                applyState(data.state, data.event);
+            } catch (error) {
+                console.error("Invalid server message:", error);
+            }
+        });
+
+        socket.addEventListener("close", () => {
+            setConnection(false);
+            scheduleReconnect();
+        });
+
+        socket.addEventListener("error", () => setConnection(false));
+    }
+
+    function scheduleReconnect() {
+        if (reconnectTimer) return;
+        reconnectTimer = setTimeout(() => {
+            reconnectTimer = null;
+            connect();
+        }, 2000);
+    }
+
+    function setConnection(connected) {
+        connectionElement.textContent = connected ? "CONNECTED" : "DISCONNECTED";
+        connectionElement.className = connected ? "connection connected" : "connection";
+    }
+
+    function sendAction(action, payload = {}) {
+        if (!socket || socket.readyState !== WebSocket.OPEN) return;
+        socket.send(JSON.stringify({ action, payload }));
+    }
+
+    function applyState(state, eventName) {
+
+        timerState = state;
+
+
+        if (state.running) {
+
+            localStartedAt =
+                Date.now() -
+                state.elapsed;
+
+        } else {
+
+            localStartedAt = null;
+
+        }
+
+
+        /*
+        * ==========================================
+        * SELECTOR SYNC
+        *
+        * IMPORTANT:
+        * Do NOT sync Game/Mode on every
+        * WebSocket update.
+        * ==========================================
+        */
+
+        if (!selectorsInitialized) {
+
+            syncGameSelector();
+            syncModeSelector();
+
+            selectorsInitialized = true;
+
+        }
+
+        else if (eventName === "GAME_CHANGED") {
+
+            syncGameSelector();
+
+        }
+
+        else if (eventName === "MODE_CHANGED") {
+
+            syncModeSelector();
+
+        }
+
+
+        render();
+
+        updateButtonState();
+
+        triggerPanelEvent(
+            eventName
+        );
+    }
+
+    function syncGameSelector() {
+
+        const currentGame =
+            String(
+                timerState.gameName || ""
+            );
+
+
+        const knownOption =
+            [
+                ...gameSelect.options
+            ].some(
+                (option) =>
+                    option.value ===
+                    currentGame
+            );
+
+
+        if (knownOption) {
+
+            gameSelect.value =
+                currentGame;
+
+            customGame.classList.remove(
+                "visible"
+            );
+
+            customGameInput.value = "";
+
+        }
+
+        else {
+
+            gameSelect.value =
+                "__custom__";
+
+            customGame.classList.add(
+                "visible"
+            );
+
+            customGameInput.value =
+                currentGame;
+        }
+    }
+
+
+    function syncModeSelector() {
+
+        const modeOption =
+            [
+                ...modeSelect.options
+            ].some(
+                (option) =>
+                    option.value ===
+                    timerState.modeName
+            );
+
+
+        modeSelect.value =
+            modeOption
+                ? timerState.modeName
+                : "CUSTOM";
+    }
+
+    function render() {
+        let elapsed = timerState.elapsed;
+
+        if (timerState.running && localStartedAt) {
+            elapsed = Date.now() - localStartedAt;
+        }
+
+        $("timer").textContent = formatTime(elapsed);
+        $("currentGameName").textContent = String(timerState.gameName || "CUSTOM GAME").toUpperCase();
+        $("currentModeName").textContent = String(timerState.modeName || "SURVIVAL").toUpperCase();
+        $("currentState").textContent = getReadableState(timerState.status);
+
+        const status = $("status");
+        const statusText = $("statusText");
+
+        status.classList.remove("playing", "dead");
+
+        if (timerState.status === "WORLD_LOST") {
+            status.classList.add("dead");
+            statusText.textContent = "WORLD LOST";
+        } else if (timerState.status === "PLAYING") {
+            status.classList.add("playing");
+            statusText.textContent = "PLAYING";
+        } else if (timerState.status === "PAUSED") {
+            statusText.textContent = "PAUSED";
+        } else {
+            statusText.textContent = "READY";
+        }
+    }
+
+    function getReadableState(status) {
+        switch (status) {
+            case "PLAYING": return "PLAYING";
+            case "PAUSED": return "PAUSED";
+            case "WORLD_LOST": return "WORLD LOST";
+            default: return "READY";
+        }
+    }
+
+    function updateButtonState() {
+        const status = timerState.status;
+        const isRunning = status === "PLAYING";
+        const isPaused = status === "PAUSED";
+        const isNew = status === "NEW";
+        const isLost = status === "WORLD_LOST";
+
+        $("startButton").disabled = !isNew;
+        $("pauseButton").disabled = !isRunning;
+        $("resumeButton").disabled = !isPaused;
+        $("worldLostButton").disabled = !isRunning && !isPaused;
+        $("addDeathButton").disabled = isLost;
+        $("removeDeathButton").disabled = timerState.deaths <= 0;
+        $("resetDeathsButton").disabled = timerState.deaths <= 0;
+        $("resetButton").disabled = false;
+
+        const allowGameEdit = !isRunning && !isLost;
+        gameSelect.disabled = !allowGameEdit;
+        modeSelect.disabled = !allowGameEdit;
+        customGameInput.disabled = !allowGameEdit;
+        $("applyGameButton").disabled = !allowGameEdit;
+        $("applyModeButton").disabled = !allowGameEdit;
+    }
+
+    function triggerPanelEvent(eventName) {
+        if (!eventName || eventName === "HEARTBEAT" || eventName === "INITIAL" || eventName === "STATE") return;
+
+        panel.classList.remove("event", "lost");
+        void panel.offsetWidth;
+
+        if (eventName === "WORLD_LOST") {
+            panel.classList.add("lost");
+            return;
+        }
+
+        panel.classList.add("event");
+    }
+
+    function formatTime(milliseconds) {
+        const totalSeconds = Math.max(0, Math.floor(milliseconds / 1000));
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+    }
+
+    function pad(number) {
+        return String(number).padStart(2, "0");
+    }
+
+    gameSelect.addEventListener(
+        "change",
+        () => {
+
+            const isCustom =
+                gameSelect.value ===
+                "__custom__";
+
+
+            customGame.classList.toggle(
+                "visible",
+                isCustom
+            );
+
+
+            if (isCustom) {
+
+                customGameInput.focus();
+
+            } else {
+
+                customGameInput.value = "";
+
+            }
+
+        }
+    );
+
+    customGameInput.addEventListener(
+        "keydown",
+        (event) => {
+
+            if (
+                event.key ===
+                "Enter"
+            ) {
+
+                event.preventDefault();
+
+                $("applyGameButton").click();
+
+            }
+
+        }
+    );
+
+    $("applyGameButton").addEventListener("click", () => {
+        const value = gameSelect.value === "__custom__"
+            ? customGameInput.value.trim()
+            : gameSelect.value;
+
+        if (!value) {
+            customGameInput.focus();
+            return;
+        }
+
+        sendAction("SET_GAME", { gameName: value });
+    });
+
+    $("applyModeButton").addEventListener("click", () => {
+        const value = modeSelect.value;
+        sendAction("SET_MODE", {
+            modeName: value === "CUSTOM" ? "CUSTOM MODE" : value
+        });
+    });
+
+    $("startButton").addEventListener("click", () => sendAction("START"));
+    $("pauseButton").addEventListener("click", () => sendAction("PAUSE"));
+    $("resumeButton").addEventListener("click", () => sendAction("RESUME"));
+    $("worldLostButton").addEventListener("click", () => sendAction("WORLD_LOST"));
+    $("addDeathButton").addEventListener("click", () => sendAction("ADD_DEATH"));
+    $("removeDeathButton").addEventListener("click", () => sendAction("REMOVE_DEATH"));
+    $("resetDeathsButton").addEventListener("click", () => sendAction("RESET_DEATHS"));
+    $("resetButton").addEventListener("click", () => sendAction("RESET"));
+
+    setInterval(render, 250);
+    connect();
+    updateButtonState();
+    render();
+</script>
+</body>
+</html>

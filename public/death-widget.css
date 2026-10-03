@@ -1,0 +1,1571 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: transparent;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.death-widget {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+}
+
+.death-card {
+    position: relative;
+    width: min(520px, 96vw);
+    min-height: 92px;
+    overflow: visible;
+    isolation: isolate;
+    border: 1px solid rgba(255, 45, 55, 0.46);
+    border-radius: 11px;
+    background:
+        linear-gradient(90deg, rgba(7, 7, 10, 0.96), rgba(23, 7, 13, 0.90), rgba(7, 7, 10, 0.96)),
+        url("https://raw.githubusercontent.com/ImamHilmi/bison-stream-assets/main/chat/alert-popup-japan-night.png") center / cover no-repeat;
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+        0 15px 36px rgba(0, 0, 0, 0.46),
+        0 0 18px rgba(255, 25, 35, 0.14),
+        0 0 52px rgba(165, 0, 20, 0.09);
+}
+
+.death-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    border-radius:
+        11px;
+
+    background:
+
+        radial-gradient(
+            circle at 50% 50%,
+            rgba(
+                255,
+                20,
+                30,
+                0.10
+            ),
+            transparent 45%
+        ),
+
+        linear-gradient(
+            180deg,
+            rgba(
+                255,
+                255,
+                255,
+                0.02
+            ),
+            transparent 35%,
+            rgba(
+                0,
+                0,
+                0,
+                0.36
+            )
+        );
+}
+
+.top-edge {
+    position: absolute;
+    top: 0;
+    left: 7%;
+    width: 86%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255, 45, 55, 0.95), transparent);
+    box-shadow: 0 0 10px rgba(255, 40, 50, 0.70);
+    z-index: 5;
+}
+
+.death-content {
+    position: relative;
+    z-index: 4;
+    min-height: 92px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 14px;
+    padding: 14px 24px;
+}
+
+.death-titles {
+    min-width: 0;
+}
+
+.game-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 1.7px;
+    text-transform: uppercase;
+}
+
+.label {
+    margin-top: 4px;
+    color: rgba(255, 255, 255, 0.42);
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 1.9px;
+    text-transform: uppercase;
+}
+
+.death-number {
+    min-width: 58px;
+    text-align: center;
+    color: #ffffff;
+    font-family: "Courier New", monospace;
+    font-size: 38px;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: 2px;
+    text-shadow:
+        0 0 8px rgba(255, 255, 255, 0.12),
+        0 0 22px rgba(255, 30, 40, 0.26);
+    transform-origin: center;
+}
+
+.lost-badge {
+    justify-self: end;
+    color: rgba(255, 255, 255, 0.46);
+    font-size: 7px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-align: right;
+}
+
+.side-mark {
+    position: absolute;
+    top: 50%;
+    width: 12px;
+    height: 26px;
+    transform: translateY(-50%);
+    z-index: 4;
+}
+
+.side-mark.left {
+    left: -8px;
+    border-right: 10px solid #ff3a49;
+    border-top: 13px solid transparent;
+    border-bottom: 13px solid transparent;
+    filter: drop-shadow(0 0 5px rgba(255, 35, 45, 0.7));
+}
+
+.side-mark.right {
+    right: -8px;
+    border-left: 10px solid #ff3a49;
+    border-top: 13px solid transparent;
+    border-bottom: 13px solid transparent;
+    filter: drop-shadow(0 0 5px rgba(255, 35, 45, 0.7));
+}
+
+.particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #ff4553;
+    box-shadow: 0 0 7px rgba(255, 55, 65, 0.9);
+    opacity: 0;
+    z-index: 4;
+}
+
+.p1 { left: 13%; top: 36%; }
+.p2 { left: 22%; top: 70%; }
+.p3 { left: 35%; top: 22%; }
+.p4 { right: 16%; top: 32%; }
+.p5 { right: 26%; top: 72%; }
+.p6 { right: 37%; top: 20%; }
+
+.flash {
+    position: absolute;
+    inset: 0;
+    z-index: 6;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+    opacity: 0;
+    transform: translateX(-125%);
+    pointer-events: none;
+}
+
+.red-pulse {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: radial-gradient(circle at 50% 50%, rgba(255, 25, 35, 0.20), transparent 58%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.death-card.death-added .death-number {
+    animation: deathPop 0.62s cubic-bezier(0.18, 1.45, 0.34, 1) 1;
+}
+
+.death-card.death-added {
+    animation: deathImpact 0.68s ease-out 1;
+}
+
+.death-card.death-added .flash {
+    animation: flashSweep 0.52s ease-out 1;
+}
+
+.death-card.death-added .red-pulse {
+    animation: redFlash 0.56s ease-out 1;
+}
+
+.death-card.death-added .particle {
+    animation: particleBurst 0.90s ease-out 1;
+}
+
+.death-card.death-removed .death-number {
+    animation: deathRemove 0.44s ease-out 1;
+}
+
+.death-card.world-lost {
+    animation: worldLost 0.82s ease-out 1, deadAura 2.1s ease-in-out infinite;
+}
+
+.death-card.world-lost .death-number {
+    color: #ff5a62;
+    text-shadow:
+        0 0 8px rgba(255, 50, 60, 0.40),
+        0 0 25px rgba(255, 25, 35, 0.46);
+}
+
+.death-card.world-lost .lost-badge {
+    color: #ff5a62;
+}
+
+.death-card.world-lost .side-mark {
+    animation: lostArrow 0.75s ease-out 1;
+}
+
+.death-card.world-lost .side-mark.right {
+    animation-name: lostArrowRight;
+}
+
+.death-card.state-reset {
+    animation: resetDeathCard 0.55s ease-out 1;
+}
+
+@keyframes deathPop {
+    0% { transform: scale(1); }
+    28% { transform: scale(1.28); }
+    55% { transform: scale(0.90); }
+    76% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+}
+
+@keyframes deathImpact {
+    0% { transform: scale(1); filter: brightness(1); }
+    20% { transform: scale(1.045); filter: brightness(1.48); }
+    48% { transform: scale(0.986); }
+    72% { transform: scale(1.008); }
+    100% { transform: scale(1); filter: brightness(1); }
+}
+
+@keyframes deathRemove {
+    0% { transform: translateY(0) scale(1); }
+    45% { transform: translateY(-3px) scale(0.94); }
+    100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes flashSweep {
+    0% { opacity: 0; transform: translateX(-125%); }
+    20% { opacity: 0.8; }
+    100% { opacity: 0; transform: translateX(125%); }
+}
+
+@keyframes redFlash {
+    0% { opacity: 0; }
+    20% { opacity: 0.9; }
+    100% { opacity: 0; }
+}
+
+@keyframes particleBurst {
+    0% { opacity: 0; transform: translate(0, 8px) scale(0.5); }
+    22% { opacity: 1; }
+    100% { opacity: 0; transform: translate(20px, -26px) scale(1); }
+}
+
+@keyframes worldLost {
+    0% { transform: scale(1) rotate(0); filter: brightness(1); }
+    15% { transform: scale(1.07) rotate(-1deg); filter: brightness(1.50); }
+    30% { transform: scale(0.96) rotate(0.9deg); }
+    46% { transform: scale(1.04) rotate(-0.5deg); }
+    65% { transform: scale(0.99) rotate(0.2deg); }
+    100% { transform: scale(1) rotate(0); filter: brightness(1); }
+}
+
+@keyframes deadAura {
+    0%, 100% {
+        box-shadow:
+            inset 0 0 0 1px rgba(255, 55, 65, 0.15),
+            0 15px 36px rgba(0, 0, 0, 0.46),
+            0 0 20px rgba(255, 25, 35, 0.20),
+            0 0 52px rgba(160, 0, 20, 0.12);
+    }
+    50% {
+        box-shadow:
+            inset 0 0 0 1px rgba(255, 85, 95, 0.30),
+            0 15px 36px rgba(0, 0, 0, 0.46),
+            0 0 32px rgba(255, 25, 35, 0.42),
+            0 0 84px rgba(160, 0, 20, 0.24);
+    }
+}
+
+@keyframes lostArrow {
+    0% { transform: translateY(-50%) translateX(0) scale(1); }
+    22% { transform: translateY(-50%) translateX(-7px) scale(1.18); }
+    46% { transform: translateY(-50%) translateX(4px) scale(0.90); }
+    70% { transform: translateY(-50%) translateX(-2px) scale(1.04); }
+    100% { transform: translateY(-50%) translateX(0) scale(1); }
+}
+
+@keyframes lostArrowRight {
+    0% { transform: translateY(-50%) translateX(0) scale(1); }
+    22% { transform: translateY(-50%) translateX(7px) scale(1.18); }
+    46% { transform: translateY(-50%) translateX(-4px) scale(0.90); }
+    70% { transform: translateY(-50%) translateX(2px) scale(1.04); }
+    100% { transform: translateY(-50%) translateX(0) scale(1); }
+}
+
+@keyframes resetDeathCard {
+    0% { transform: scale(1); filter: brightness(1); }
+    30% { transform: scale(1.025); filter: brightness(1.26); }
+    100% { transform: scale(1); filter: brightness(1); }
+}
+
+@media (max-width: 560px) {
+    .death-card {
+        min-height: 78px;
+    }
+
+    .death-content {
+        min-height: 78px;
+        padding: 11px 17px;
+        gap: 8px;
+    }
+
+    .game-name {
+        font-size: 8px;
+        letter-spacing: 1.3px;
+    }
+
+    .label {
+        font-size: 7px;
+        letter-spacing: 1.4px;
+    }
+
+    .death-number {
+        min-width: 44px;
+        font-size: 31px;
+    }
+
+    .lost-badge {
+        font-size: 6px;
+    }
+}
+/* ==========================================================
+   BISON DEATH COUNTER
+   ENHANCED IDLE ANIMATION
+   ========================================================== */
+
+
+/* ==========================================================
+   IDLE CARD
+   ========================================================== */
+
+.death-card:not(.death-change):not(.world-lost) {
+
+    background-image:
+
+        linear-gradient(
+            90deg,
+            rgba(
+                4,
+                5,
+                9,
+                0.90
+            ),
+            rgba(
+                15,
+                5,
+                10,
+                0.56
+            ),
+            rgba(
+                4,
+                5,
+                9,
+                0.90
+            )
+        ),
+
+        radial-gradient(
+            circle at 50% 50%,
+            rgba(
+                255,
+                30,
+                45,
+                0.13
+            ),
+            transparent 52%
+        ),
+
+        url(
+            "https://raw.githubusercontent.com/ImamHilmi/bison-stream-assets/main/chat/alert-popup-japan-night.png"
+        );
+
+    background-size:
+        100% 100%,
+        100% 100%,
+        cover;
+
+    background-position:
+        center,
+        center,
+        center;
+
+    background-repeat:
+        no-repeat;
+
+    border-color:
+        rgba(
+            255,
+            45,
+            55,
+            0.62
+        );
+
+    animation:
+        deathIdleGlow
+        4.5s
+        ease-in-out
+        infinite;
+}
+
+
+/* ==========================================================
+   AMBIENT GLOW AROUND THE WIDGET
+   ========================================================== */
+
+.death-widget {
+
+    position: relative;
+
+    isolation: isolate;
+}
+
+
+/*
+ * Large soft red aura
+ */
+
+.death-widget::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 380px;
+    height: 95px;
+
+    transform:
+        translate(
+            -50%,
+            -50%
+        );
+
+    border-radius: 50%;
+
+    background:
+
+        radial-gradient(
+            ellipse,
+            rgba(
+                255,
+                30,
+                40,
+                0.18
+            ) 0%,
+            rgba(
+                255,
+                20,
+                30,
+                0.08
+            ) 35%,
+            transparent 74%
+        );
+
+    filter:
+        blur(18px);
+
+    opacity:
+        0.45;
+
+    z-index:
+        -1;
+
+    pointer-events:
+        none;
+
+    animation:
+        ambientRedGlow
+        4.5s
+        ease-in-out
+        infinite;
+}
+
+
+/* ==========================================================
+   MOVING ENERGY PARTICLE
+   ========================================================== */
+
+.death-widget::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 3px;
+    height: 3px;
+
+    border-radius: 50%;
+
+    background:
+        #ff4653;
+
+    box-shadow:
+
+        -170px -22px 0
+        rgba(
+            255,
+            65,
+            75,
+            0.42
+        ),
+
+        -120px 25px 0
+        rgba(
+            255,
+            40,
+            50,
+            0.30
+        ),
+
+        -72px -27px 0
+        rgba(
+            255,
+            70,
+            80,
+            0.36
+        ),
+
+        70px 24px 0
+        rgba(
+            255,
+            45,
+            55,
+            0.38
+        ),
+
+        122px -24px 0
+        rgba(
+            255,
+            65,
+            75,
+            0.30
+        ),
+
+        171px 18px 0
+        rgba(
+            255,
+            35,
+            45,
+            0.32
+        );
+
+    opacity:
+        0.25;
+
+    filter:
+        blur(0.2px);
+
+    pointer-events:
+        none;
+
+    z-index:
+        0;
+
+    animation:
+        idleParticles
+        8s
+        linear
+        infinite;
+}
+
+
+/* ==========================================================
+   CARD LIGHT SWEEP
+   ========================================================== */
+
+.death-card:not(.death-change):not(.world-lost)::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    width: 35%;
+
+    height: 100%;
+
+    left: -45px;
+    top: 0;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(
+                255,
+                70,
+                80,
+                0.04
+            ),
+            rgba(
+                255,
+                100,
+                110,
+                0.16
+            ),
+            rgba(
+                255,
+                70,
+                80,
+                0.04
+            ),
+            transparent
+        );
+
+    transform:
+        skewX(
+            -18deg
+        )
+        translateX(
+            -160px
+        );
+
+    opacity:
+        0;
+
+    z-index:
+        8;
+
+    pointer-events:
+        none;
+
+    animation:
+        idleLightSweep
+        6.5s
+        ease-in-out
+        infinite;
+}
+
+
+/* ==========================================================
+   INNER FRAME
+   ========================================================== */
+
+.death-card:not(.death-change):not(.world-lost)::after {
+
+    content: "";
+
+    position: absolute;
+
+    inset:
+        5px;
+
+    border:
+        1px solid
+        rgba(
+            255,
+            70,
+            80,
+            0.15
+        );
+
+    border-radius:
+        5px;
+
+    pointer-events:
+        none;
+
+    z-index:
+        9;
+
+    animation:
+        innerFramePulse
+        4s
+        ease-in-out
+        infinite;
+}
+
+
+/* ==========================================================
+   CONTENT FLOAT
+   ========================================================== */
+
+.death-card:not(.death-change):not(.world-lost)
+.content {
+
+    animation:
+        idleContentFloat
+        5s
+        ease-in-out
+        infinite;
+}
+
+
+/* ==========================================================
+   LABEL BREATHING
+   ========================================================== */
+
+.death-card:not(.death-change):not(.world-lost)
+.label {
+
+    animation:
+        idleLabelBreath
+        4s
+        ease-in-out
+        infinite;
+}
+
+
+/* ==========================================================
+   NUMBER BREATHING
+   ========================================================== */
+
+.death-card:not(.death-change):not(.world-lost)
+.death-number {
+
+    animation:
+        idleNumberGlow
+        3.8s
+        ease-in-out
+        infinite;
+}
+
+
+/* ==========================================================
+   ARROW IDLE BOOST
+   ========================================================== */
+
+.death-card:not(.death-change):not(.world-lost)
+.arrow {
+
+    filter:
+
+        drop-shadow(
+            0 0 3px
+            rgba(
+                255,
+                45,
+                55,
+                0.18
+            )
+        );
+
+}
+
+
+/* ==========================================================
+   IDLE CARD GLOW
+   ========================================================== */
+
+@keyframes deathIdleGlow {
+
+    0%,
+    100% {
+
+        box-shadow:
+
+            inset 0 0 0 1px
+            rgba(
+                255,
+                35,
+                45,
+                0.13
+            ),
+
+            inset 0 2px 0
+            rgba(
+                255,
+                255,
+                255,
+                0.06
+            ),
+
+            inset 0 -4px 0
+            rgba(
+                0,
+                0,
+                0,
+                0.36
+            ),
+
+            0 7px 18px
+            rgba(
+                0,
+                0,
+                0,
+                0.48
+            ),
+
+            0 0 8px
+            rgba(
+                255,
+                30,
+                40,
+                0.12
+            ),
+
+            0 0 20px
+            rgba(
+                255,
+                20,
+                30,
+                0.06
+            );
+
+    }
+
+    50% {
+
+        box-shadow:
+
+            inset 0 0 0 1px
+            rgba(
+                255,
+                45,
+                55,
+                0.28
+            ),
+
+            inset 0 2px 0
+            rgba(
+                255,
+                255,
+                255,
+                0.08
+            ),
+
+            inset 0 -4px 0
+            rgba(
+                0,
+                0,
+                0,
+                0.36
+            ),
+
+            0 7px 18px
+            rgba(
+                0,
+                0,
+                0,
+                0.48
+            ),
+
+            0 0 13px
+            rgba(
+                255,
+                35,
+                45,
+                0.28
+            ),
+
+            0 0 30px
+            rgba(
+                255,
+                25,
+                35,
+                0.14
+            );
+
+    }
+
+}
+
+
+/* ==========================================================
+   AMBIENT RED GLOW
+   ========================================================== */
+
+@keyframes ambientRedGlow {
+
+    0%,
+    100% {
+
+        opacity:
+            0.30;
+
+        transform:
+            translate(
+                -50%,
+                -50%
+            )
+            scale(
+                0.92
+            );
+    }
+
+    50% {
+
+        opacity:
+            0.82;
+
+        transform:
+            translate(
+                -50%,
+                -50%
+            )
+            scale(
+                1.08
+            );
+    }
+}
+
+
+/* ==========================================================
+   PARTICLES
+   ========================================================== */
+
+@keyframes idleParticles {
+
+    0% {
+
+        transform:
+            translate(
+                -6px,
+                2px
+            );
+
+        opacity:
+            0.16;
+    }
+
+    25% {
+
+        transform:
+            translate(
+                8px,
+                -4px
+            );
+
+        opacity:
+            0.34;
+    }
+
+    50% {
+
+        transform:
+            translate(
+                -4px,
+                -7px
+            );
+
+        opacity:
+            0.22;
+    }
+
+    75% {
+
+        transform:
+            translate(
+                7px,
+                3px
+            );
+
+        opacity:
+            0.36;
+    }
+
+    100% {
+
+        transform:
+            translate(
+                -6px,
+                2px
+            );
+
+        opacity:
+            0.16;
+    }
+}
+
+
+/* ==========================================================
+   LIGHT SWEEP
+   ========================================================== */
+
+@keyframes idleLightSweep {
+
+    0% {
+
+        opacity:
+            0;
+
+        transform:
+            skewX(
+                -18deg
+            )
+            translateX(
+                -190px
+            );
+    }
+
+    15% {
+
+        opacity:
+            0;
+    }
+
+    28% {
+
+        opacity:
+            0.8;
+    }
+
+    48% {
+
+        opacity:
+            0;
+    }
+
+    100% {
+
+        opacity:
+            0;
+
+        transform:
+            skewX(
+                -18deg
+            )
+            translateX(
+                520px
+            );
+    }
+}
+
+
+/* ==========================================================
+   INNER FRAME PULSE
+   ========================================================== */
+
+@keyframes innerFramePulse {
+
+    0%,
+    100% {
+
+        opacity:
+            0.45;
+
+        border-color:
+            rgba(
+                255,
+                70,
+                80,
+                0.10
+            );
+    }
+
+    50% {
+
+        opacity:
+            1;
+
+        border-color:
+            rgba(
+                255,
+                70,
+                80,
+                0.28
+            );
+    }
+}
+
+
+/* ==========================================================
+   CONTENT FLOAT
+   ========================================================== */
+
+@keyframes idleContentFloat {
+
+    0%,
+    100% {
+
+        transform:
+            translateY(
+                0
+            );
+    }
+
+    50% {
+
+        transform:
+            translateY(
+                -1.5px
+            );
+    }
+}
+
+
+/* ==========================================================
+   LABEL BREATH
+   ========================================================== */
+
+@keyframes idleLabelBreath {
+
+    0%,
+    100% {
+
+        opacity:
+            0.86;
+
+        letter-spacing:
+            0.8px;
+
+        text-shadow:
+
+            1px 1px 0
+            #150b12,
+
+            0 2px 4px
+            rgba(
+                0,
+                0,
+                0,
+                0.45
+            );
+    }
+
+    50% {
+
+        opacity:
+            1;
+
+        letter-spacing:
+            1.15px;
+
+        text-shadow:
+
+            1px 1px 0
+            #150b12,
+
+            0 2px 5px
+            rgba(
+                0,
+                0,
+                0,
+                0.55
+            ),
+
+            0 0 10px
+            rgba(
+                255,
+                50,
+                60,
+                0.20
+            );
+    }
+}
+
+
+/* ==========================================================
+   NUMBER GLOW
+   ========================================================== */
+
+@keyframes idleNumberGlow {
+
+    0%,
+    100% {
+
+        transform:
+            scale(
+                1
+            );
+
+        text-shadow:
+
+            0 0 3px
+            rgba(
+                255,
+                255,
+                255,
+                0.12
+            ),
+
+            0 2px 5px
+            rgba(
+                0,
+                0,
+                0,
+                0.50
+            );
+    }
+
+    50% {
+
+        transform:
+            scale(
+                1.035
+            );
+
+        text-shadow:
+
+            0 0 5px
+            rgba(
+                255,
+                255,
+                255,
+                0.20
+            ),
+
+            0 0 12px
+            rgba(
+                255,
+                50,
+                60,
+                0.26
+            ),
+
+            0 2px 5px
+            rgba(
+                0,
+                0,
+                0,
+                0.50
+            );
+    }
+}
+
+
+/* ==========================================================
+   REDUCE MOTION
+   ========================================================== */
+
+@media (
+    prefers-reduced-motion: reduce
+) {
+
+    .death-card:not(.death-change):not(.world-lost),
+    .death-card:not(.death-change):not(.world-lost) .content,
+    .death-card:not(.death-change):not(.world-lost) .label,
+    .death-card:not(.death-change):not(.world-lost) .death-number,
+    .death-card:not(.death-change):not(.world-lost)::before,
+    .death-card:not(.death-change):not(.world-lost)::after,
+    .death-widget::before,
+    .death-widget::after {
+
+        animation:
+            none !important;
+    }
+}
+/* ==========================================================
+   IDLE ARROW EXPANSION
+   ========================================================== */
+
+.death-card:not(.death-added):not(.death-removed):not(.world-lost)
+.side-mark.left {
+
+    animation:
+        sideMarkIdleLeft
+        4.2s
+        cubic-bezier(
+            0.45,
+            0,
+            0.55,
+            1
+        )
+        infinite;
+
+    transform-origin:
+        center;
+
+    will-change:
+        transform;
+}
+
+
+.death-card:not(.death-added):not(.death-removed):not(.world-lost)
+.side-mark.right {
+
+    animation:
+        sideMarkIdleRight
+        4.2s
+        cubic-bezier(
+            0.45,
+            0,
+            0.55,
+            1
+        )
+        infinite;
+
+    animation-delay:
+        0.18s;
+
+    transform-origin:
+        center;
+
+    will-change:
+        transform;
+}
+
+
+/* ==========================================================
+   LEFT ARROW
+   ========================================================== */
+
+@keyframes sideMarkIdleLeft {
+
+    0% {
+
+        transform:
+            translateY(-50%)
+            translateX(0)
+            scale(1);
+
+        opacity:
+            1;
+    }
+
+    20% {
+
+        transform:
+            translateY(-50%)
+            translateX(-8px)
+            scale(0.96);
+
+        opacity:
+            1;
+    }
+
+    40% {
+
+        transform:
+            translateY(-50%)
+            translateX(-18px)
+            scale(0.88);
+
+        opacity:
+            0.96;
+    }
+
+    55% {
+
+        transform:
+            translateY(-50%)
+            translateX(-28px)
+            scale(0.76);
+
+        opacity:
+            0.90;
+    }
+
+    62% {
+
+        transform:
+            translateY(-50%)
+            translateX(-32px)
+            scale(0.70);
+
+        opacity:
+            0.86;
+    }
+
+    68% {
+
+        transform:
+            translateY(-50%)
+            translateX(-32px)
+            scale(0.70);
+
+        opacity:
+            0.86;
+    }
+
+    78% {
+
+        transform:
+            translateY(-50%)
+            translateX(-21px)
+            scale(0.82);
+
+        opacity:
+            0.94;
+    }
+
+    90% {
+
+        transform:
+            translateY(-50%)
+            translateX(-8px)
+            scale(0.96);
+
+        opacity:
+            1;
+    }
+
+    100% {
+
+        transform:
+            translateY(-50%)
+            translateX(0)
+            scale(1);
+
+        opacity:
+            1;
+    }
+}
+
+
+/* ==========================================================
+   RIGHT ARROW
+   ========================================================== */
+
+@keyframes sideMarkIdleRight {
+
+    0% {
+
+        transform:
+            translateY(-50%)
+            translateX(0)
+            scale(1);
+
+        opacity:
+            1;
+    }
+
+    20% {
+
+        transform:
+            translateY(-50%)
+            translateX(8px)
+            scale(0.96);
+
+        opacity:
+            1;
+    }
+
+    40% {
+
+        transform:
+            translateY(-50%)
+            translateX(18px)
+            scale(0.88);
+
+        opacity:
+            0.96;
+    }
+
+    55% {
+
+        transform:
+            translateY(-50%)
+            translateX(28px)
+            scale(0.76);
+
+        opacity:
+            0.90;
+    }
+
+    62% {
+
+        transform:
+            translateY(-50%)
+            translateX(32px)
+            scale(0.70);
+
+        opacity:
+            0.86;
+    }
+
+    68% {
+
+        transform:
+            translateY(-50%)
+            translateX(32px)
+            scale(0.70);
+
+        opacity:
+            0.86;
+    }
+
+    78% {
+
+        transform:
+            translateY(-50%)
+            translateX(21px)
+            scale(0.82);
+
+        opacity:
+            0.94;
+    }
+
+    90% {
+
+        transform:
+            translateY(-50%)
+            translateX(8px)
+            scale(0.96);
+
+        opacity:
+            1;
+    }
+
+    100% {
+
+        transform:
+            translateY(-50%)
+            translateX(0)
+            scale(1);
+
+        opacity:
+            1;
+    }
+}

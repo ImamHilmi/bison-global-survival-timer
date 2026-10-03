@@ -1,0 +1,23 @@
+{
+  "name": "bison-global-survival-timer",
+  "version": "2.0.0",
+  "description": "Global BISON survival timer, control panel, and death counter with WebSocket sync.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "streamlabs",
+    "obs",
+    "timer",
+    "websocket",
+    "stream-overlay"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1",
+    "ws": "^8.21.3"
+  }
+}
